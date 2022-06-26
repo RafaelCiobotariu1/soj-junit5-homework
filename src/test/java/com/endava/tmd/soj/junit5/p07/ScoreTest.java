@@ -1,5 +1,14 @@
 package com.endava.tmd.soj.junit5.p07;
 
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.text.NumberFormat;
+import java.util.Locale;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
 // Provocare: definiti cel putin 3 teste pentru clasa care tine scorul
 // Unde e cel mai potrivit ca sa initializam variabila "score"?
 //
@@ -9,4 +18,60 @@ package com.endava.tmd.soj.junit5.p07;
 // cum putem scrie testul astfel incat sa functioneze pentru toti, indiferent de ce Locale are fiecare? 
 class ScoreTest {
     private Score score;
+    private static NumberFormat nf;
+
+    @BeforeAll
+    static void setupLocale()
+    {
+        Locale.setDefault(Locale.FRANCE);
+        nf = NumberFormat.getInstance(Locale.getDefault());
+        nf.setMinimumFractionDigits(1);
+    }
+
+    @BeforeEach
+    void setupScore()
+    {
+        score = new Score();
+    }
+
+    @Test
+    void noAnswer()
+    {
+        assertThat( score.getPercent()).isEqualTo(nf.format(100.0));
+    }
+
+    @Test
+    void allCorrect()
+    {
+        score.addCorrectAnswer();
+        assertThat( score.getPercent()).isEqualTo(nf.format(100.0));
+    }
+
+    @Test
+    void allIncorrect()
+    {
+        score.addIncorrectAnswer();
+        assertThat( score.getPercent()).isEqualTo(nf.format(0.0));
+    }
+
+    @Test
+    void oneCorrectTwoIncorrect()
+    {
+        score.addCorrectAnswer();
+        score.addIncorrectAnswer();
+        score.addIncorrectAnswer();
+        assertThat( score.getPercent()).isEqualTo(nf.format(33.3));
+
+    }
+
+    @Test
+    void TwoCorrectTwoIncorrect()
+    {
+        score.addCorrectAnswer();
+        score.addCorrectAnswer();
+        score.addIncorrectAnswer();
+        score.addIncorrectAnswer();
+        assertThat( score.getPercent()).isEqualTo(nf.format(50.0));
+    }
+
 }
